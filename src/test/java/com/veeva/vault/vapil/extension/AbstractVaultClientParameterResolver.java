@@ -11,7 +11,6 @@ import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.api.extension.ParameterResolver;
 
 import java.io.*;
-import java.util.Properties;
 
 import static com.veeva.vault.vapil.api.client.VaultClient.AuthenticationType.BASIC;
 import static com.veeva.vault.vapil.api.client.VaultClient.AuthenticationType.SESSION_ID;
@@ -61,14 +60,18 @@ public abstract class AbstractVaultClientParameterResolver implements ParameterR
     private void buildVaultClient(VaultClient.AuthenticationType authType) {
         switch (authType.getTypeName()) {
             case "SESSION_ID":
-                vaultClient = VaultClient
+                VaultClient.Builder vaultClientBuilderSession = VaultClient
                         .newClientBuilder(SESSION_ID)
                         .withVaultDNS(rootNode.get("vaultDNS").asText())
                         .withVaultUsername(rootNode.get("vaultUsername").asText())
                         .withVaultPassword(rootNode.get("vaultPassword").asText())
                         .withVaultSessionId(rootNode.get("vaultSessionId").asText())
-                        .withVaultClientId(rootNode.get("vaultClientId").asText())
-                        .build();
+                        .withVaultClientId(rootNode.get("vaultClientId").asText());
+
+                if (rootNode.get("allowAllCertificates") != null && rootNode.get("allowAllCertificates").asBoolean()) {
+                    vaultClientBuilderSession.withAllowAllCertificates(rootNode.get("allowAllCertificates").asBoolean());
+                }
+                vaultClient = vaultClientBuilderSession.build();
 
                 // Build Vault Client from username/password if session ID is not valid
                 if (!vaultClient.getAuthenticationResponse().getResponseStatus().equals("SUCCESS")) {
@@ -77,13 +80,18 @@ public abstract class AbstractVaultClientParameterResolver implements ParameterR
                 break;
 
             case "BASIC":
-                vaultClient = VaultClient
+                VaultClient.Builder vaultClientBuilderBasic = VaultClient
                         .newClientBuilder(BASIC)
                         .withVaultDNS(rootNode.get("vaultDNS").asText())
                         .withVaultUsername(rootNode.get("vaultUsername").asText())
                         .withVaultPassword(rootNode.get("vaultPassword").asText())
-                        .withVaultClientId(rootNode.get("vaultClientId").asText())
-                        .build();
+                        .withVaultClientId(rootNode.get("vaultClientId").asText());
+
+                if (rootNode.get("allowAllCertificates") != null && rootNode.get("allowAllCertificates").asBoolean()) {
+                    vaultClientBuilderBasic.withAllowAllCertificates(rootNode.get("allowAllCertificates").asBoolean());
+                }
+
+                vaultClient = vaultClientBuilderBasic.build();
 
                 if (vaultClient.getAuthenticationResponse().getResponseStatus().equals("SUCCESS")) {
                     sessionId = vaultClient.getAuthenticationResponse().getSessionId();

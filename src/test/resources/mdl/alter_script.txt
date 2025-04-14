@@ -1,0 +1,3 @@
+ALTER Object vapil_test_object__c (
+    help_content('VAPIL MetadataRequestComponentTest::TestExecuteMdlScript')
+);

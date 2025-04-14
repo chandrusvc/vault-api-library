@@ -1,0 +1,3 @@
+file,id,name__v,type__v,subtype__v,classification__v,lifecycle__v,major_version_number__v,minor_version_number__v,status__v
+6061,"VAPIL Test Create Multiple Document Versions 0","VAPIL Test Doc Type","VAPIL Test Doc Subtype","VAPIL Test Doc Classification","VAPIL Test Doc Lifecycle",0,2,Draft
+6061,"VAPIL Test Create Multiple Document Versions 1","VAPIL Test Doc Type","VAPIL Test Doc Subtype","VAPIL Test Doc Classification","VAPIL Test Doc Lifecycle",0,3,Draft

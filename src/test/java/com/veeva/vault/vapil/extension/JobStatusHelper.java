@@ -2,6 +2,7 @@ package com.veeva.vault.vapil.extension;
 
 import com.veeva.vault.vapil.api.client.VaultClient;
 import com.veeva.vault.vapil.api.model.response.JobStatusResponse;
+import com.veeva.vault.vapil.api.model.response.MdlExecuteResponse;
 import com.veeva.vault.vapil.api.model.response.MdlResponse;
 import com.veeva.vault.vapil.api.request.JobRequest;
 import com.veeva.vault.vapil.api.request.MetaDataRequest;
@@ -42,7 +43,7 @@ public class JobStatusHelper {
 
             if (jobStatus.equals("SUCCESS")) break;
 
-            MdlResponse jobStatusResponse = vaultClient.newRequest(MetaDataRequest.class)
+            MdlExecuteResponse jobStatusResponse = vaultClient.newRequest(MetaDataRequest.class)
                     .retrieveAsynchronousMDLScriptResults(String.valueOf(jobId));
 
             if (jobStatusResponse.getResponseStatus() == null) {

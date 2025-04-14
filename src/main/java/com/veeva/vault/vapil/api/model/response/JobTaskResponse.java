@@ -42,6 +42,15 @@ public class JobTaskResponse extends VaultResponse {
 		this.set("responseDetails", responseDetails);
 	}
 
+	@JsonProperty("job_id")
+	public Integer getJobId() {
+		return this.getInteger("job_id");
+	}
+
+	public void setJobId(Integer jobId) {
+		this.set("job_id", jobId);
+	}
+
 	@JsonProperty("tasks")
 	public List<JobTask> getTasks() {
 		return (List<JobTask>) this.get("tasks");
@@ -70,14 +79,15 @@ public class JobTaskResponse extends VaultResponse {
 			this.set("id", id);
 		}
 
-		@JsonProperty("status")
-		public String getStatus() {
-			return getString("status");
+		@JsonProperty("state")
+		public String getState() {
+			return getString("state");
 		}
 
-		public void setStatus(String status) {
-			this.set("status", status);
+		public void setState(String state) {
+			this.set("state", state);
 		}
+
 	}
 
 	public static class ResponseDetails extends VaultModel {

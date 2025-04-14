@@ -10,9 +10,14 @@ package com.veeva.vault.vapil.api.request;
 import com.veeva.vault.vapil.api.client.VaultClient;
 import com.veeva.vault.vapil.api.model.common.Job;
 import com.veeva.vault.vapil.api.model.response.*;
+import com.veeva.vault.vapil.extension.BinderRequestHelper;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import com.veeva.vault.vapil.extension.VaultClientParameterResolver;
+
+import java.util.Collections;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 @Disabled("Jobs are set to Inactive after the sandbox is refreshed. " +
 		"Verify that the VAPIL Test Doc Job is active before running tests.")
@@ -118,20 +123,34 @@ public class JobRequestTest {
 		}
 	}
 
-	@Test
-	@Disabled
-	@Order(5)
+	@Nested
+	@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+	@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 	@DisplayName("successfully retrieve the tasks associated with an SDK job")
-	public void testRetrieveJobTasks() {
-		JobTaskResponse response = vaultClient.newRequest(JobRequest.class).retrieveJobTasks(1);
-		Assertions.assertTrue(response.isSuccessful());
-		Assertions.assertNotNull(response.getTasks());
-		Assertions.assertNotEquals(0, response.getTasks().size());
+	@Disabled("Test Manually. May be automated in the future")
+	class TestRetrieveSdkJobTasks {
+		JobTaskResponse response = null;
+		int jobId = 282871;
 
-		if (response.isPaginated()) {
-			JobTaskResponse paginatedResponse = vaultClient.newRequest(JobRequest.class)
-					.retrieveJobTasksByPage(response.getResponseDetails().getNextPage());
-			Assertions.assertTrue(paginatedResponse.isSuccessful());
+		@Test
+		@Order(1)
+		public void testRequest() {
+			response = vaultClient.newRequest(JobRequest.class)
+							.retrieveSdkJobTasks(jobId);
+			assertNotNull(response);
+		}
+
+		@Test
+		@Order(2)
+		public void testResponse() {
+			assertTrue(response.isSuccessful());
+			assertNotNull(response.getUrl());
+			assertNotNull(response.getJobId());
+			assertNotNull(response.getTasks());
+			for (JobTaskResponse.JobTask task : response.getTasks()) {
+				assertNotNull(task.getId());
+				assertNotNull(task.getState());
+			}
 		}
 	}
 }

@@ -13,5 +13,6 @@
     "idpPassword": "",
     "logApiErrors": true,
     "httpTimeout": 60,
-    "validateSession": true
+    "validateSession": true,
+    "allowAllCertificates": false
 }

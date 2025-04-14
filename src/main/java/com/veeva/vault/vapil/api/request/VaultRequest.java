@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Constructor;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.List;
@@ -226,38 +227,38 @@ public abstract class VaultRequest<T extends VaultRequest<T>> {
 						if ((response.getContentType() != null)
 								&& (response.getContentType().contains(HttpRequestConnector.HTTP_CONTENT_TYPE_JSON))) {
 
-							obj = (T) VaultResponse.class.newInstance();
+								Constructor<VaultResponse> constructor = VaultResponse.class.getDeclaredConstructor();
+								obj = (T) constructor.newInstance();
 
-							((VaultResponse) obj).setResponseStatus(VaultResponse.HTTP_RESPONSE_FAILURE);
+								((VaultResponse) obj).setResponseStatus(VaultResponse.HTTP_RESPONSE_FAILURE);
 
-							byte[] errorContent = null;
+								byte[] errorContent = null;
 
-							if (responseOption == HttpRequestConnector.ResponseOption.BYTE_ARRAY) {
-								errorContent = response.getByteArray();
-							} else {
-								File file = new File(response.getOutputFilePath());
-								if (file.exists()) {
-									errorContent = Files.readAllBytes(file.toPath());
+								if (responseOption == HttpRequestConnector.ResponseOption.BYTE_ARRAY) {
+									errorContent = response.getByteArray();
+								} else {
+									File file = new File(response.getOutputFilePath());
+									if (file.exists()) {
+										errorContent = Files.readAllBytes(file.toPath());
+									}
 								}
+
+								obj = objectMapper.readValue(new String(errorContent, StandardCharsets.UTF_8), responseObjectClass);
+								((VaultResponse) obj).setResponse(new String(errorContent, StandardCharsets.UTF_8));
+
+							} else{
+								Constructor<?> constructor = responseObjectClass.getDeclaredConstructor();
+								obj = (T) constructor.newInstance();
+								((VaultResponse) obj).setResponseStatus(VaultResponse.HTTP_RESPONSE_SUCCESS);
 							}
-
-							obj = objectMapper.readValue(new String(errorContent, StandardCharsets.UTF_8), responseObjectClass);
-							((VaultResponse) obj).setResponse(new String(errorContent, StandardCharsets.UTF_8));
-
 						} else {
-							obj = responseObjectClass.newInstance();
-							((VaultResponse) obj).setResponseStatus(VaultResponse.HTTP_RESPONSE_SUCCESS);
+							Constructor<?> constructor = responseObjectClass.getDeclaredConstructor();
+							obj = (T) constructor.newInstance();
+							((VaultResponse) obj).setResponseStatus(VaultResponse.HTTP_RESPONSE_FAILURE);
 						}
-					} else {
-						obj = responseObjectClass.newInstance();
-						((VaultResponse) obj).setResponseStatus(VaultResponse.HTTP_RESPONSE_FAILURE);
-					}
-
-				} catch (InstantiationException | IllegalAccessException | IOException e1) {
+				} catch (IOException | ReflectiveOperationException e1) {
 					log.error(e1.getMessage());
 				}
-
-
 				break;
 			case STRING:
 				// JSON response, initialize the object by deserializing the response
