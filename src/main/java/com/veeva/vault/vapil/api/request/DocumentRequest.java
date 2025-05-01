@@ -137,6 +137,7 @@ public class DocumentRequest extends VaultRequest<DocumentRequest> {
 	private Integer offset;
 	private String startDate;
 	private String endDate;
+	private CreateDraftType createDraft;
 
 
 	private DocumentRequest() {
@@ -1012,20 +1013,34 @@ public class DocumentRequest extends VaultRequest<DocumentRequest> {
 	 * <b>Use bulk for multiple documents!</b>
 	 *
 	 * @param docId           Document id
-	 * @param createDraftType latestContent or uploadedContent
 	 * @return DocumentCreateResponse
 	 * @vapil.api <pre>
 	 * POST /api/{version}/objects/documents/{doc_id}</pre>
-	 * @vapil.vaultlink <a href='https://developer.veevavault.com/api/25.1/#create-single-document' target='_blank'>https://developer.veevavault.com/api/25.1/#create-single-document</a>
+	 * @vapil.vaultlink <a href='https://developer.veevavault.com/api/25.1/#create-single-document-version' target='_blank'>https://developer.veevavault.com/api/25.1/#create-single-document-version</a>
 	 * @vapil.request <pre>
-	 * DocumentResponse response =vaultClient.newRequest(DocumentRequest.class)
-	 * 				.createSingleDocumentVersion(docId, DocumentRequest.CreateDraftType.LATESTCONTENT);</pre>
+	 * <i>Example 1 - Create Single Document Version From Uploaded Content</i>
+	 * DocumentResponse response = vaultClient.newRequest(DocumentRequest.class)
+	 * 		.setBinaryFile(testFile.getAbsolutePath(), Files.readAllBytes(testFile.toPath()))
+	 * 		.setCreateDraft(CreateDraftType.UPLOADEDCONTENT)
+	 * 		.createSingleDocumentVersion(docId);
+	 *
+	 * <i>Example 1 - Create Single Document Version From Latest Content</i>
+	 * DocumentResponse response = vaultClient.newRequest(DocumentRequest.class)
+	 * 		.setCreateDraft(CreateDraftType.LATESTCONTENT)
+	 * 		.createSingleDocumentVersion(docId);
+	 *
+	 * <i>Example 1 - Create Single Document Version From Placeholder</i>
+	 * DocumentResponse response = vaultClient.newRequest(DocumentRequest.class)
+	 * 		.setBinaryFile(testFile.getAbsolutePath(), Files.readAllBytes(testFile.toPath()))
+	 * 		.createSingleDocumentVersion(docId);
+	 * </pre>
 	 * @vapil.response <pre>
-	 * if (response != null &amp;&amp; response.isSuccessful()) {
-	 * 		System.out.println("Created doc id: " + response.getDocument().getId());
-	 * }</pre>
+	 * System.out.println("Response Status: " + response.getResponseStatus());
+	 * System.out.println("Major Version: " + response.getDocument().getMajorVersionNumber());
+	 * System.out.println("Minor Version: " + response.getDocument().getMinorVersionNumber());
+	 * </pre>
 	 */
-	public DocumentResponse createSingleDocumentVersion(int docId, CreateDraftType createDraftType) {
+	public DocumentResponse createSingleDocumentVersion(int docId) {
 		String url = vaultClient.getAPIEndpoint(URL_DOC)
 				.replace("{doc_id}", Integer.valueOf(docId).toString());
 
@@ -1034,7 +1049,10 @@ public class DocumentRequest extends VaultRequest<DocumentRequest> {
 		if (this.suppressRendition != null) {
 			request.getHeaderParams().put("suppressRendition=", suppressRendition.toString().toUpperCase());
 		}
-		request.addBodyParamMultiPart("createDraft", createDraftType.getValue());
+
+		if (this.createDraft != null) {
+			request.addBodyParamMultiPart("createDraft", createDraft.getValue());
+		}
 
 		if (this.inputPath != null) {
 			request.addFileMultiPart("file", inputPath);
@@ -2064,6 +2082,19 @@ public class DocumentRequest extends VaultRequest<DocumentRequest> {
 	 */
 	public DocumentRequest setEndData(String endDate) {
 		this.endDate = endDate;
+		return this;
+	}
+
+	/**
+	 * Set the createDraft type. This parameter is only required to create a
+	 * new draft version from an existing document or by uploading a source file.
+	 * To create a new version for a placeholder document, you must omit this parameter.
+	 *
+	 * @param createDraft The createDraft type: latestContent or uploadedContent
+	 * @return The Request
+	 */
+	public DocumentRequest setCreateDraft(CreateDraftType createDraft) {
+		this.createDraft = createDraft;
 		return this;
 	}
 }

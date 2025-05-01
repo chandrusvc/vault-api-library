@@ -13,7 +13,6 @@ import java.util.Map;
 
 /**
  * Document Role Requests
- * TODO: Update Link
  * @vapil.apicoverage <a href="https://developer.veevavault.com/api/25.1/#document-roles">https://developer.veevavault.com/api/25.1/#document-roles</a>
  */
 public class DocumentRoleRequest extends VaultRequest<DocumentRoleRequest> {
@@ -39,84 +38,17 @@ public class DocumentRoleRequest extends VaultRequest<DocumentRoleRequest> {
 	private DocumentRoleRequest() {
 	}
 
-//	TODO: Delete this later
-	/**
-	 * <b>Retrieve Roles</b>
-	 * <p>
-	 * Retrieve all available roles on a document or binder and the users and groups assigned to them.
-	 *
-	 * @param documentRequestType Documents or Binders
-	 * @param id                  The Document or Binder id
-	 * @return DocumentRoleRetrieveResponse
-	 * @vapil.api <pre>
-	 * GET /api/{version}/objects/{documents_or_binders}/{id}/roles</pre>
-	 * @vapil.vaultlink <a href='https://developer.veevavault.com/api/25.1/#retrieve-roles' target='_blank'>https://developer.veevavault.com/api/25.1/#retrieve-roles</a>
-	 * @vapil.request <pre>
-	 * DocumentRoleRetrieveResponse resp = vaultClient.newRequest(DocumentRoleRequest.class)
-	 * 				.retrieveRoles(DocumentRequestType.DOCUMENTS, docId);</pre>
-	 * @vapil.response <pre>
-	 * if (resp != null &amp;&amp; resp.isSuccessful()) {
-	 *   System.out.println("Document Roles:");
-	 *   resp.getRoles().forEach(role -&gt; {
-	 *     System.out.println("\tName:  " + role.getName());
-	 *     System.out.println("\tLabel:  " + role.getLabel());
-	 *     System.out.println("\tAssigned Users:  " + role.getAssignedUsers());
-	 *     System.out.println("\tAssigned Groups:  " + role.getAssignedGroups());
-	 *     System.out.println("\tAvailable Users:  " + role.getAvailableUsers());
-	 *     System.out.println("\tAvailable Groups:  " + role.getAvailableGroups());
-	 *     System.out.println("\tDefault Users:  " + role.getDefaultUsers());
-	 *     System.out.println("\tDefault Groups:  " + role.getDefaultGroups());
-	 *   });
-	 *   System.out.println();
-	 * }</pre>
-	 */
-	public DocumentRoleRetrieveResponse retrieveRoles(DocumentRequestType documentRequestType, int id) {
-		String url = vaultClient.getAPIEndpoint(URL_DOC_ROLE_RETRIEVE);
-		url = url.replace("{documents_or_binders}", documentRequestType.getValue());
-		url = url.replace("{id}", Integer.toString(id));
-
-		HttpRequestConnector request = new HttpRequestConnector(url);
-		return send(HttpMethod.GET, request, DocumentRoleRetrieveResponse.class);
-	}
-
-	//	TODO: Delete this later
-	/**
-	 * <b>Retrieve Roles - Filter by Role</b>
-	 * <p>
-	 * Include a role name to filter for a specific role. For example, owner__v.
-	 *
-	 * @param documentRequestType Documents or Binders
-	 * @param id                  The Document or Binder id
-	 * @param roleName            The Role name to filter results by
-	 * @return DocumentRoleRetrieveResponse
-	 * @vapil.api <pre>
-	 * GET /api/{version}/objects/{documents_or_binders}/{id}/roles{/role_name}</pre>
-	 * @vapil.vaultlink <a href='https://developer.veevavault.com/api/25.1/#retrieve-roles' target='_blank'>https://developer.veevavault.com/api/25.1/#retrieve-roles</a>
-	 * @vapil.request <pre>
-	 * DocumentRoleRetrieveResponse resp = documentRoleRequest
-	 * 				.retrieveRoles(DocumentRequestType.DOCUMENTS, docId, "owner__v");</pre>
-	 * @vapil.response <pre>See {@link #retrieveRoles(DocumentRequestType, int)} for example responses</pre>
-	 */
-	public DocumentRoleRetrieveResponse retrieveRoles(DocumentRequestType documentRequestType, int id, String roleName) {
-		String url = vaultClient.getAPIEndpoint(URL_DOC_ROLE_RETRIEVE_SINGLE);
-		url = url.replace("{documents_or_binders}", documentRequestType.getValue());
-		url = url.replace("{id}", Integer.toString(id));
-		url = url.replace("{role_name}", roleName);
-
-		HttpRequestConnector request = new HttpRequestConnector(url);
-		return send(HttpMethod.GET, request, DocumentRoleRetrieveResponse.class);
-	}
 
 	/**
 	 * <b>Retrieve All Document Roles</b>
 	 * <p>
-	 * Retrieve TODO
+	 * Retrieve all available roles on a document and the users and groups assigned to them.
 	 *
 	 * @param id                  The Document id
 	 * @return DocumentRoleRetrieveResponse
 	 * @vapil.api <pre>
-	 * TODO</pre>
-	 * @vapil.vaultlink <a href='TODO' target='_blank'>TODO</a>
+	 * GET /api/{version}/objects/documents/{doc_id}/roles</pre>
+	 * @vapil.vaultlink <a href='https://developer.veevavault.com/api/25.1/#retrieve-all-document-roles' target='_blank'>https://developer.veevavault.com/api/25.1/#retrieve-all-document-roles</a>
 	 * @vapil.request <pre>
 	 * DocumentRoleRetrieveResponse response = vaultClient.newRequest(DocumentRoleRequest.class)
 	 * 		.retrieveAllDocumentRoles(docId);
@@ -142,14 +74,14 @@ public class DocumentRoleRequest extends VaultRequest<DocumentRoleRequest> {
 	/**
 	 * <b>Retrieve Document Role</b>
 	 * <p>
-	 * Retrieve TODO
+	 * Retrieve Document Role
 	 *
 	 * @param id                  The Document id
 	 * @param roleName            The Role name to retrieve
 	 * @return DocumentRoleRetrieveResponse
 	 * @vapil.api <pre>
-	 * TODO</pre>
-	 * @vapil.vaultlink <a href='TODO' target='_blank'>TODO</a>
+	 * GET /api/{version}/objects/documents/{doc_id}/roles/{role_name}</pre>
+	 * @vapil.vaultlink <a href='https://developer.veevavault.com/api/25.1/#retrieve-document-role' target='_blank'>https://developer.veevavault.com/api/25.1/#retrieve-document-role</a>
 	 * @vapil.request <pre>
 	 * DocumentRoleRetrieveResponse response = vaultClient.newRequest(DocumentRoleRequest.class)
 	 * 		.retrieveDocumentRole(docId, "owner__v");
@@ -200,17 +132,16 @@ public class DocumentRoleRequest extends VaultRequest<DocumentRoleRequest> {
 	}
 
 	/**
-	 * <b>Assign users and groups to roles on documents in bulk.</b>
+	 * <b>Assign Users &amp; Groups to Roles on Multiple Documents</b>
 	 * <p>
 	 * The maximum CSV input file size is 1GB.
 	 * The values in the input must be UTF-8 encoded.
 	 * CSVs must follow the standard format.
 	 * The maximum batch size is 1000.
-	 * TODO: UPDATE
 	 * @return DocumentRoleUpdateBulkResponse
 	 * @vapil.api <pre>
 	 * POST /api/{version}/objects/documents/roles/batch</pre>
-	 * @vapil.vaultlink <a href='TODO' target='_blank'>TODO</a>
+	 * @vapil.vaultlink <a href='https://developer.veevavault.com/api/25.1/#assign-users-amp-groups-to-roles-on-multiple-documents-amp-binders' target='_blank'>https://developer.veevavault.com/api/25.1/#assign-users-amp-groups-to-roles-on-multiple-documents-amp-binders</a>
 	 * @vapil.request <pre>
 	 * DocumentRoleChangeBulkResponse response = vaultClient.newRequest(DocumentRoleRequest.class)
 	 * 		.setContentTypeCsv()
@@ -245,7 +176,7 @@ public class DocumentRoleRequest extends VaultRequest<DocumentRoleRequest> {
 	 * @return DocumentRoleChangeBulkResponse
 	 * @vapil.api <pre>
 	 * DELETE /api/{version}/objects/documents/roles/batch</pre>
-	 * @vapil.vaultlink <a href='TODO' target='_blank'>TODO</a>
+	 * @vapil.vaultlink <a href='https://developer.veevavault.com/api/25.1/#remove-users-amp-groups-from-roles-on-multiple-documents-amp-binders' target='_blank'>https://developer.veevavault.com/api/25.1/#remove-users-amp-groups-from-roles-on-multiple-documents-amp-binders</a>
 	 * @vapil.request <pre>
 	 * DocumentRoleChangeBulkResponse response = vaultClient.newRequest(DocumentRoleRequest.class)
 	 * 		.setContentTypeCsv()

@@ -1,6 +1,7 @@
 package com.veeva.vault.vapil.api.request;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.JsonNodeType;
 import com.veeva.vault.vapil.api.client.VaultClient;
 import com.veeva.vault.vapil.api.model.response.VaultResponse;
 import com.veeva.vault.vapil.api.model.response.VaultResponse.*;
@@ -12,6 +13,7 @@ import java.io.File;
 import static org.junit.jupiter.api.Assertions.*;
 
 @Tag("VaultRequestTest")
+@Tag("SmokeTest")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @DisplayName("Vault Request Test should")
@@ -147,4 +149,32 @@ public class VaultRequestTest {
         }
     }
 
+    @Nested
+    @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @DisplayName("return a JsonNodeType of OBJECT when using getResponseJSON()")
+    class TestGetResponseJson {
+        VaultResponse response;
+
+        @Test
+        @Order(1)
+        void testRequest() {
+            VaultClient client = VaultClient.newClientBuilder(VaultClient.AuthenticationType.BASIC)
+                    .withVaultDNS(basicSettingsNode.get("vaultDNS").asText())
+                    .withVaultClientId(basicSettingsNode.get("vaultClientId").asText())
+                    .withVaultUsername(basicSettingsNode.get("vaultUsername").asText())
+                    .withVaultPassword(basicSettingsNode.get("vaultPassword").asText())
+                    .build();
+
+            response = client.getAuthenticationResponse();
+            assertNotNull(response);
+        }
+
+        @Test
+        @Order(2)
+        void testResponse() {
+            assertEquals("SUCCESS", response.getResponseStatus());
+            assertEquals(JsonNodeType.OBJECT, response.getResponseJSON().getNodeType());
+        }
+    }
 }

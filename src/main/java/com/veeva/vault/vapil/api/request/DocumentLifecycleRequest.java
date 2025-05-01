@@ -9,7 +9,6 @@ package com.veeva.vault.vapil.api.request;
 
 import java.util.Map;
 
-import com.veeva.vault.vapil.api.model.common.DocumentRequestType;
 import com.veeva.vault.vapil.api.model.response.*;
 import com.veeva.vault.vapil.connector.HttpRequestConnector;
 import com.veeva.vault.vapil.connector.HttpRequestConnector.HttpMethod;
@@ -31,7 +30,6 @@ public class DocumentLifecycleRequest extends VaultRequest<DocumentLifecycleRequ
 	private static final String URL_ACTION_RETRIEVE_DOCUMENT_ENTRY_CRITERIA = "/objects/documents/{id}/versions/{major_version}/{minor_version}/lifecycle_actions/{name__v}/entry_requirements";
 	private static final String URL_ACTION_RETRIEVE_BINDER_ENTRY_CRITERIA = "/objects/binders/{id}/versions/{major_version}/{minor_version}/lifecycle_actions/{name__v}/entry_requirements";
 	private static final String URL_ACTION_DOWNLOAD_CONTROLLED_COPY_JOB_RESULT = "/objects/documents/actions/{lifecycle.state.action}/{job_id}/results";
-	private static final String URL_ACTION_BULK_DOCUMENT_STATE_CHANGE = "/objects/{documents_or_binders}/lifecycle_actions/{user_action_name}";
 	private static final String URL_ACTION_INITIATE_MULTIPLE_DOCS = "/objects/documents/lifecycle_actions/{user_action_name}";
 	private static final String URL_ACTION_INITIATE_MULTIPLE_BINDERS = "/objects/binders/lifecycle_actions/{user_action_name}";
 	private static final String URL_CREATE_OVERRIDE_RULES = "/configuration/role_assignment_rule";
@@ -74,7 +72,7 @@ public class DocumentLifecycleRequest extends VaultRequest<DocumentLifecycleRequ
 	 * @return DocumentActionResponse
 	 * @vapil.api <pre>
 	 * GET /api/{version}/objects/documents/{id}/versions/{major_version}/{minor_version}/lifecycle_actions</pre>
-	 * @vapil.vaultlink <a href='TODO' target='_blank'>TODO</a>
+	 * @vapil.vaultlink <a href='https://developer.veevavault.com/api/25.1/#retrieve-document-user-actions' target='_blank'>https://developer.veevavault.com/api/25.1/#retrieve-document-user-actions</a>
 	 * @vapil.request <pre>
 	 * DocumentActionResponse response = vaultClient.newRequest(DocumentLifecycleRequest.class)
 	 * 		.retrieveDocumentUserActions(docId, majorVersion, minorVersion);
@@ -119,7 +117,7 @@ public class DocumentLifecycleRequest extends VaultRequest<DocumentLifecycleRequ
 	 * @return DocumentActionResponse
 	 * @vapil.api <pre>
 	 * POST /api/{version}/objects/documents/lifecycle_actions</pre>
-	 * @vapil.vaultlink <a href='TODO' target='_blank'>TODO</a>
+	 * @vapil.vaultlink <a href='https://developer.veevavault.com/api/25.1/#retrieve-user-actions-on-multiple-documents' target='_blank'>https://developer.veevavault.com/api/25.1/#retrieve-user-actions-on-multiple-documents</a>
 	 * @vapil.request <pre>
 	 * DocumentActionResponse response = vaultClient.newRequest(DocumentLifecycleRequest.class)
 	 * 		.retrieveUserActionsOnMultipleDocuments(docIds);
@@ -165,7 +163,7 @@ public class DocumentLifecycleRequest extends VaultRequest<DocumentLifecycleRequ
 	 * @return DocumentActionEntryCriteriaResponse
 	 * @vapil.api <pre>
 	 * GET /api/{version}/objects/documents/{id}/versions/{major_version}/{minor_version}/lifecycle_actions/{name__v}/entry_requirements</pre>
-	 * @vapil.vaultlink <a href='TODO' target='_blank'>TODO</a>
+	 * @vapil.vaultlink <a href='https://developer.veevavault.com/api/25.1/#retrieve-document-entry-criteria' target='_blank'>https://developer.veevavault.com/api/25.1/#retrieve-document-entry-criteria</a>
 	 * @vapil.request <pre>
 	 * DocumentActionEntryCriteriaResponse response = vaultClient.newRequest(DocumentLifecycleRequest.class)
 	 * 		.retrieveDocumentEntryCriteria(docId, majorVersion, minorVersion, userActionName);
@@ -205,7 +203,7 @@ public class DocumentLifecycleRequest extends VaultRequest<DocumentLifecycleRequ
 	 * @return DocumentActionInitiateResponse
 	 * @vapil.api <pre>
 	 * PUT /api/{version}/objects/documents/{id}/versions/{major_version}/{minor_version}/lifecycle_actions/{name__v}</pre>
-	 * @vapil.vaultlink <a href='TODO' target='_blank'>TODO</a>
+	 * @vapil.vaultlink <a href='https://developer.veevavault.com/api/25.1/#initiate-document-user-action' target='_blank'>https://developer.veevavault.com/api/25.1/#initiate-document-user-action</a>
 	 * @vapil.request <pre>
 	 * DocumentActionInitiateResponse response = vaultClient.newRequest(DocumentLifecycleRequest.class)
 	 * 		.initiateDocumentUserAction(docId, majorVersion, minorVersion, userActionName);
@@ -224,6 +222,10 @@ public class DocumentLifecycleRequest extends VaultRequest<DocumentLifecycleRequ
 		HttpRequestConnector request = new HttpRequestConnector(url);
 		request.addHeaderParam(HttpRequestConnector.HTTP_HEADER_CONTENT_TYPE,
 				HttpRequestConnector.HTTP_CONTENT_TYPE_XFORM);
+
+		if (bodyParams != null && !bodyParams.isEmpty()) {
+			request.setBodyParams(bodyParams);
+		}
 
 		return send(HttpMethod.PUT, request, DocumentActionInitiateResponse.class);
 	}
@@ -244,7 +246,7 @@ public class DocumentLifecycleRequest extends VaultRequest<DocumentLifecycleRequ
 	 * @return VaultResponse
 	 * @vapil.api <pre>
 	 * PUT /api/{version}/objects/documents/lifecycle_actions/{user_action_name}</pre>
-	 * @vapil.vaultlink <a href='TODO' target='_blank'>TODO</a>
+	 * @vapil.vaultlink <a href='https://developer.veevavault.com/api/25.1/#initiate-bulk-document-user-actions' target='_blank'>https://developer.veevavault.com/api/25.1/#initiate-bulk-document-user-actions</a>
 	 * @vapil.request <pre>
 	 * VaultResponse response = vaultClient.newRequest(DocumentLifecycleRequest.class)
 	 * 		.initiateBulkDocumentUserActions(userActionName, docIds, lifecycle, state);
@@ -278,7 +280,7 @@ public class DocumentLifecycleRequest extends VaultRequest<DocumentLifecycleRequ
 	 * @return BinderActionResponse
 	 * @vapil.api <pre>
 	 * GET /api/{version}/objects/documents/{id}/versions/{major_version}/{minor_version}/lifecycle_actions</pre>
-	 * @vapil.vaultlink <a href='TODO' target='_blank'>TODO</a>
+	 * @vapil.vaultlink <a href='https://developer.veevavault.com/api/25.1/#retrieve-binder-user-actions' target='_blank'>https://developer.veevavault.com/api/25.1/#retrieve-binder-user-actions</a>
 	 * @vapil.request <pre>
 	 * BinderActionResponse response = vaultClient.newRequest(DocumentLifecycleRequest.class)
 	 * 		.retrieveBinderUserActions(binderId, majorVersion, minorVersion);
@@ -323,7 +325,7 @@ public class DocumentLifecycleRequest extends VaultRequest<DocumentLifecycleRequ
 	 * @return BinderActionResponse
 	 * @vapil.api <pre>
 	 * POST /api/{version}/objects/binders/lifecycle_actions</pre>
-	 * @vapil.vaultlink <a href='TODO' target='_blank'>TODO</a>
+	 * @vapil.vaultlink <a href='https://developer.veevavault.com/api/25.1/#retrieve-user-actions-on-multiple-binders' target='_blank'>https://developer.veevavault.com/api/25.1/#retrieve-user-actions-on-multiple-binders</a>
 	 * @vapil.request <pre>
 	 * BinderActionResponse response = vaultClient.newRequest(DocumentLifecycleRequest.class)
 	 * 		.retrieveUserActionsOnMultipleBinders(binderIds);
@@ -369,7 +371,7 @@ public class DocumentLifecycleRequest extends VaultRequest<DocumentLifecycleRequ
 	 * @return BinderActionEntryCriteriaResponse
 	 * @vapil.api <pre>
 	 * GET /api/{version}/objects/binders/{id}/versions/{major_version}/{minor_version}/lifecycle_actions/{name__v}/entry_requirements</pre>
-	 * @vapil.vaultlink <a href='TODO' target='_blank'>TODO</a>
+	 * @vapil.vaultlink <a href='https://developer.veevavault.com/api/25.1/#retrieve-binder-entry-criteria' target='_blank'>https://developer.veevavault.com/api/25.1/#retrieve-binder-entry-criteria</a>
 	 * @vapil.request <pre>
 	 * BinderActionEntryCriteriaResponse response = vaultClient.newRequest(DocumentLifecycleRequest.class)
 	 * 		.retrieveBinderEntryCriteria(binderId, majorVersion, minorVersion, userActionName);
@@ -409,7 +411,7 @@ public class DocumentLifecycleRequest extends VaultRequest<DocumentLifecycleRequ
 	 * @return BinderActionInitiateResponse
 	 * @vapil.api <pre>
 	 * PUT /api/{version}/objects/binders/{id}/versions/{major_version}/{minor_version}/lifecycle_actions/{name__v}</pre>
-	 * @vapil.vaultlink <a href='TODO' target='_blank'>TODO</a>
+	 * @vapil.vaultlink <a href='https://developer.veevavault.com/api/25.1/#initiate-binder-user-action' target='_blank'>https://developer.veevavault.com/api/25.1/#initiate-binder-user-action</a>
 	 * @vapil.request <pre>
 	 * BinderActionInitiateResponse response = vaultClient.newRequest(DocumentLifecycleRequest.class)
 	 * 		.initiateBinderUserAction(binderId, majorVersion, minorVersion, userActionName);
@@ -448,7 +450,7 @@ public class DocumentLifecycleRequest extends VaultRequest<DocumentLifecycleRequ
 	 * @return VaultResponse
 	 * @vapil.api <pre>
 	 * PUT /api/{version}/objects/binders/lifecycle_actions/{user_action_name}</pre>
-	 * @vapil.vaultlink <a href='TODO' target='_blank'>TODO</a>
+	 * @vapil.vaultlink <a href='https://developer.veevavault.com/api/25.1/#initiate-bulk-binder-user-actions' target='_blank'>https://developer.veevavault.com/api/25.1/#initiate-bulk-binder-user-actions</a>
 	 * @vapil.request <pre>
 	 * VaultResponse response = vaultClient.newRequest(DocumentLifecycleRequest.class)
 	 * 		.initiateBulkBinderUserActions(userActionName, binderIds, lifecycle, state);

@@ -1218,11 +1218,9 @@ public class DocumentRequestTest {
     @Nested
     @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-    @DisplayName("successfully create a single document version")
-    @Disabled
-    class TestCreateSingleDocumentVersion {
-
-        DocumentResponse creatSingleDocumentVersionResponse = null;
+    @DisplayName("successfully create a single document version from uploaded content")
+    class TestCreateSingleDocumentVersionFromUploadedContent {
+        DocumentResponse response = null;
         List<Integer> docIds = new ArrayList<>();
 
         @BeforeAll
@@ -1245,17 +1243,114 @@ public class DocumentRequestTest {
         public void testRequest() throws IOException {
             File testFile = new File(PATH_TEST_FILE);
 
-            creatSingleDocumentVersionResponse = vaultClient.newRequest(DocumentRequest.class)
+            response = vaultClient.newRequest(DocumentRequest.class)
                     .setBinaryFile(testFile.getAbsolutePath(), Files.readAllBytes(testFile.toPath()))
-                    .createSingleDocumentVersion(docIds.get(0), DocumentRequest.CreateDraftType.UPLOADEDCONTENT);
+                    .setCreateDraft(DocumentRequest.CreateDraftType.UPLOADEDCONTENT)
+                    .setDescription("VAPIL test create single document version from uploaded content")
+                    .createSingleDocumentVersion(docIds.get(0));
 
-            assertNotNull(creatSingleDocumentVersionResponse);
+            assertNotNull(response);
         }
 
         @Test
         @Order(2)
         public void testResponse() {
-            assertTrue(creatSingleDocumentVersionResponse.isSuccessful());
+            assertTrue(response.isSuccessful());
+            assertNotNull(response.getDocument().getMajorVersionNumber());
+            assertNotNull(response.getDocument().getMinorVersionNumber());
+        }
+    }
+
+    @Nested
+    @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @DisplayName("successfully create a single document version from latest content")
+    class TestCreateSingleDocumentVersionFromtLatestContent {
+        DocumentResponse response = null;
+        List<Integer> docIds = new ArrayList<>();
+
+        @BeforeAll
+        public void setup() {
+            DocumentBulkResponse createDocumentsResponse = DocumentRequestHelper.createMultipleDocuments(vaultClient, 1);
+            for (DocumentResponse documentResponse : createDocumentsResponse.getData()) {
+                docIds.add(documentResponse.getDocument().getId());
+            }
+        }
+
+        @AfterAll
+        public void teardown() {
+            DocumentBulkResponse deleteDocsResponse = DocumentRequestHelper.deleteDocuments(vaultClient, docIds);
+
+            assertTrue(deleteDocsResponse.isSuccessful());
+        }
+
+        @Test
+        @Order(1)
+        public void testRequest() throws IOException {
+            response = vaultClient.newRequest(DocumentRequest.class)
+                    .setCreateDraft(DocumentRequest.CreateDraftType.LATESTCONTENT)
+                    .setDescription("VAPIL test create single document version from latest content")
+                    .createSingleDocumentVersion(docIds.get(0));
+
+            assertNotNull(response);
+        }
+
+        @Test
+        @Order(2)
+        public void testResponse() {
+            assertTrue(response.isSuccessful());
+            assertNotNull(response.getDocument().getMajorVersionNumber());
+            assertNotNull(response.getDocument().getMinorVersionNumber());
+        }
+    }
+
+    @Nested
+    @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @DisplayName("successfully create a single document version from latest content")
+    class TestCreateSingleDocumentVersionFromPlaceholder {
+        DocumentResponse response = null;
+        List<Integer> docIds = new ArrayList<>();
+
+        @BeforeAll
+        public void setup() {
+//            Create a Placeholder document
+            Document doc = new Document();
+            doc.setName("VAPIL test create single document: placeholder " + ZonedDateTime.now());
+            doc.setType(DOC_TYPE_LABEL);
+            doc.setSubtype(DOC_SUBTYPE_LABEL);
+            doc.setClassification(DOC_CLASSIFICATION_LABEL);
+            doc.setLifecycle(DOC_LIFECYCLE_LABEL);
+            DocumentResponse createResponse = vaultClient.newRequest(DocumentRequest.class)
+                    .createSingleDocument(doc);
+            assertTrue(createResponse.isSuccessful());
+            docIds.add(createResponse.getDocument().getId());
+        }
+
+        @AfterAll
+        public void teardown() {
+            DocumentBulkResponse deleteDocsResponse = DocumentRequestHelper.deleteDocuments(vaultClient, docIds);
+
+            assertTrue(deleteDocsResponse.isSuccessful());
+        }
+
+        @Test
+        @Order(1)
+        public void testRequest() throws IOException {
+            File testFile = new File(PATH_TEST_FILE);
+
+            response = vaultClient.newRequest(DocumentRequest.class)
+                    .setBinaryFile(testFile.getAbsolutePath(), Files.readAllBytes(testFile.toPath()))
+                    .setDescription("VAPIL test create single document version from placeholder")
+                    .createSingleDocumentVersion(docIds.get(0));
+
+            assertNotNull(response);
+        }
+
+        @Test
+        @Order(2)
+        public void testResponse() {
+            assertTrue(response.isSuccessful());
         }
     }
 
